@@ -19,11 +19,12 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText mViewUser, mViewPassword;
     DBHelper dbHelper;
+    private Session session;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        session = new Session(this);
         mViewUser=findViewById(R.id.et_emailSignin);
         mViewPassword =findViewById(R.id.et_passwordSignin);
         dbHelper = new DBHelper(this);
@@ -52,15 +53,6 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (Preferences.getLoggedInStatus(getBaseContext())){
-            startActivity(new Intent(getBaseContext(),MainActivity.class));
-            finish();
-        }
-    }
-
     private void validationLogin(){
         /* Mereset semua Error dan fokus menjadi default */
         String user = mViewUser.getText().toString();
@@ -69,6 +61,7 @@ public class LoginActivity extends AppCompatActivity {
         mViewUser.setError(null);
         mViewPassword.setError(null);
         if(res == true){
+            session.setLoggedin(true);
             Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
         }else {
@@ -76,42 +69,5 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void masuk(){
-        Preferences.setLoggedInUser(getBaseContext(),Preferences.getRegisteredUser(getBaseContext()));
-        Preferences.setLoggedInStatus(getBaseContext(),true);
-        startActivity(new Intent(getBaseContext(),MainActivity.class));finish();
-    }
-//    private void checklogin(String user,String password){
-//        View fokus = null;
-//        boolean cancel = false;
-//        if (TextUtils.isEmpty(user)){
-//            mViewUser.setError("This field is required");
-//            fokus = mViewUser;
-//            cancel = true;
-//        }else if(!cekUser(user)){
-//            mViewUser.setError("This Username is not found");
-//            fokus = mViewUser;
-//            cancel = true;
-//        }
-//
-//        if (TextUtils.isEmpty(password)){
-//            mViewPassword.setError("This field is required");
-//            fokus = mViewPassword;
-//            cancel = true;
-//        }else if (!cekPassword(password)){
-//            mViewPassword.setError("This password is incorrect");
-//            fokus = mViewPassword;
-//            cancel = true;
-//        }
-//        if (cancel) fokus.requestFocus();
-//        else masuk();
-//    }
 
-    private boolean cekPassword(String password){
-        return password.equals(Preferences.getRegisteredPass(getBaseContext()));
-    }
-
-    private boolean cekUser(String user){
-        return user.equals(Preferences.getRegisteredUser(getBaseContext()));
-    }
 }

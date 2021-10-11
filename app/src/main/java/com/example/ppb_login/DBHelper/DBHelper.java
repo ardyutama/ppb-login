@@ -54,4 +54,21 @@ public class DBHelper extends SQLiteOpenHelper {
         else
             return false;
     }
+
+    public boolean checkUser(String username){
+        String[] columns = {row_id};
+        SQLiteDatabase db = getReadableDatabase();
+        String selection = row_username + "=?" ;
+        String[] selectionArgs = {username};
+        Cursor cursor = db.query(table_name, columns, selection, selectionArgs, null, null, null);
+        int count = cursor.getCount();
+        cursor.close();
+//        db.close();
+
+        if (count>0)
+            return true;
+        else
+            return false;
+    }
+
 }
