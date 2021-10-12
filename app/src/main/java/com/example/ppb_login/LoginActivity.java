@@ -1,7 +1,9 @@
 package com.example.ppb_login;
 
+import android.content.Context;
 import android.content.Intent;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -20,14 +22,19 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mViewUser, mViewPassword;
     DBHelper dbHelper;
     private Session session;
+    SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         session = new Session(this);
+        sharedPreferences = getSharedPreferences("userDetails", Context.MODE_PRIVATE);
+        sharedPreferences.contains("username");
         mViewUser=findViewById(R.id.et_emailSignin);
         mViewPassword =findViewById(R.id.et_passwordSignin);
         dbHelper = new DBHelper(this);
+
         mViewPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -45,6 +52,7 @@ public class LoginActivity extends AppCompatActivity {
                 validationLogin();
             }
         });
+
         findViewById(R.id.button_signupSignin).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,7 +62,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void validationLogin(){
-        /* Mereset semua Error dan fokus menjadi default */
         String user = mViewUser.getText().toString();
         String password = mViewPassword.getText().toString();
         Boolean res = dbHelper.checkUser(user,password);
@@ -63,11 +70,11 @@ public class LoginActivity extends AppCompatActivity {
         if(res == true){
             session.setLoggedin(true);
             Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            intent.putExtra("user",user);
+            startActivity(intent);
         }else {
             Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
         }
     }
-
-
 }
